@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Thanh Toán</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <style>
+      .header-links { 
+        margin: 10px 0 20px; 
+      }
+      .header-links a { 
+        margin: 0 10px;  
+      }
+      .modal-header { 
+        background-color: #e2e4e6; }
+      .btn-success { 
+        background-color: #28a745; 
+      }
+      .btn-danger { 
+        background-color: #dc3545; 
+      }
+    </style>
+</head>
+<body>
+
+
+<img src="./hinhanh.jpg" alt="" width="100%" >
+
+<div class="container my-4">
+    
+    <div class="header-links">
+        <a href="#">Trang chủ</a>
+        <a href="#" id="registerBtn">Đăng ký</a>
+        <a href="#">Trợ giúp</a>
+    </div>
+
+   
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã học viên</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Tiền dịch vụ</th>
+                <th>Tiền đồ dùng</th>
+                <th>Tổng tiền</th>
+            </tr>
+        </thead>
+        <tbody id="paymentTable">
+            <tr>
+                <td>1</td>
+                <td>123456789</td>
+                <td>Trần Anh</td>
+                <td>hongquan@iuh.edu.vn</td>
+                <td>30000</td>
+                <td>10000</td>
+                <td>40000</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row">
+      <div class="col-4 col-nd-4">
+        <h6>Mã sinh viên: 22655121</h6>
+      </div>
+      <div class="col-4 col-nd-4">
+        <h6>Họ tên: Nguyễn Thị Hồng Diễm</h6>
+      </div>
+      <div class="col-4 col-nd-4">
+        <h6>Phòng thi:________</h6>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông Tin Thanh Toán</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label>Mã học viên:</label>
+                        <input type="text" class="form-control" id="studentId" placeholder="xx-yyyyyyyy">
+                    </div>
+                    <div class="form-group">
+                        <label>Họ tên:</label>
+                        <input type="text" class="form-control" id="name" placeholder="Nguyen Van Anh">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" class="form-control" id="email" placeholder="example@iuh.edu.vn">
+                    </div>
+                    <div class="form-group">
+                        <label>Dịch vụ:</label>
+                        <select class="form-control" id="service">
+                            <option value="" disabled selected>Chọn dịch vụ</option>
+                            <option value="30000">Bơi</option>
+                            <option value="50000">Gym</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Đồ dùng:</label><br>
+                        <input type="checkbox" class="equip" value="10000"> Áo quần bơi<br>
+                        <input type="checkbox" class="equip" value="5000"> Phao<br>
+                        <input type="checkbox" class="equip" value="8000"> Kính bơi
+                    </div>
+                    <div class="form-group">
+                        <label>Tổng tiền:</label>
+                        <input type="text" class="form-control" id="totalAmount" readonly>
+                    </div>
+                    <button type="button" class="btn btn-success" id="payBtn">Thanh toán</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    
+      $('#registerBtn').click(function() { $('#registerModal').modal('show'); });
+
+      $('#service, .equip').change(function() {
+          let serviceAmount = parseInt($('#service').val()) || 0;
+          let equipAmount = 0;
+          $('.equip:checked').each(function() { equipAmount += parseInt($(this).val()); });
+          $('#totalAmount').val(serviceAmount + equipAmount);
+      });
+
+      $('#payBtn').click(function() {
+          let studentId = $('#studentId').val();
+          let name = $('#name').val();
+          let email = $('#email').val();
+          let serviceAmount = parseInt($('#service').val()) || 0;
+          let equipAmount = parseInt($('#totalAmount').val()) - serviceAmount;
+          let totalAmount = $('#totalAmount').val();
+
+          let studentIdValid = /^[0-9]{2}-[0-9]{8}$/.test(studentId);
+          let nameValid = /^[A-Z][a-z]*([ ][A-Z][a-z]*)+$/.test(name);
+          let emailValid = /^[a-zA-Z0-9._%+-]+@iuh\.edu\.vn$/.test(email);
+
+          if (!studentIdValid || !nameValid || !emailValid) {
+              alert("Thông tin không hợp lệ.");
+              return;
+          };
+
+          $('#paymentTable').append(`
+              <tr>
+                  <td>${$('#paymentTable tr').length + 1}</td>
+                  <td>${studentId}</td>
+                  <td>${name}</td>
+                  <td>${email}</td>
+                  <td>${serviceAmount}</td>
+                  <td>${equipAmount}</td>
+                  <td>${totalAmount}</td>
+              </tr>
+          `);
+          $('#registerModal').modal('hide');
+      });
+  });
+</script>
+
+</body>
+</html>
